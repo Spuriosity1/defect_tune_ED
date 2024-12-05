@@ -2,6 +2,7 @@
 #include <fstream>
 #include <nlohmann/json_fwd.hpp>
 #include <sstream>
+#include <vector>
 #include <xdiag/all.hpp>
 #include "geometry.hpp"
 #include <nlohmann/json.hpp>
@@ -18,6 +19,18 @@ int convert_index(int id){
   assert(id-1 >= 0);
   assert(id-1 < N_SITES);
   return id-1;
+}
+
+inline std::vector<int> convert_index(const std::vector<int> arr){
+  std::vector<int> retval;
+  for (auto J : arr){
+    if (J == 0){
+      assert(arr[J] == 0);
+      continue;
+    }
+    retval.push_back(convert_index(J));
+  }
+  return retval;
 }
 
 std::string pprint(const std::vector<int>& v){
@@ -96,14 +109,14 @@ int main(int argc, char* argv[]) try {
   ops["h2"] = arma::dot(bfield, arma::vec3({-1, 1,-1})) / sqrt(3);
   ops["h3"] = arma::dot(bfield, arma::vec3({-1,-1, 1})) / sqrt(3);
 
-  auto C3 = Permutation(symmetry::C3());
-  auto sigma = Permutation(symmetry::sigma());
-  auto I = Permutation(symmetry::I());
-  auto ident = I*I;
+  auto C3 = Permutation(convert_index(symmetry::C3()));
+  //auto sigma = Permutation(symmetry::sigma());
+  //auto I = Permutation(symmetry::I());
+  auto ident = C3*C3*C3;
 
   XDIAG_SHOW(C3);
-  XDIAG_SHOW(sigma);
-  XDIAG_SHOW(I);
+  //XDIAG_SHOW(sigma);
+  //XDIAG_SHOW(I);
   
   auto group = PermutationGroup({
       ident, C3, C3*C3,
@@ -124,7 +137,7 @@ int main(int argc, char* argv[]) try {
   for (int i=0; i<3; i++){
       std::cout << ("Diagonalising H, block ")<<i<<"\n";
 
-    Spinhalf block(24, 0, group, irreps[i]);
+    Spinhalf block(24, group, irreps[i]);
 
 	std::vector<std::string> statev = {"Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn"};
 	auto init_state = product(block, statev);
