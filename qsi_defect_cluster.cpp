@@ -51,17 +51,22 @@ int main(int argc, char* argv[]) try {
   json out;
 
 	set_verbosity(1);// set verbosity for monitoring progress
-					 //
+	
+  std::string out_folder(argv[1]);
+    double Jpm = atof(argv[2]);
+	arma::vec3 bfield = {atof(argv[3]), atof(argv[4]), atof(argv[5])};
 	int lanczos_dim = atoi(argv[6]); 
 	int num_kept_states = 4;
-	if (argc >= 7) num_kept_states = atoi(argv[6]);
+	if (argc >= 7) num_kept_states = atoi(argv[7]);
 
-  std::string out_folder(argv[1]);
+    out["Jpm"] = Jpm;
+    out["B"] = bfield;
+    out["lanczos_dim"] = lanczos_dim;
+
 
   OpSum ops;
 
 
-	arma::vec3 bfield = {atof(argv[2]), atof(argv[3]), atof(argv[4])};
 	for (int mu=0; mu<4; mu++){
 		ops[field_proj_label[mu]] = (double) arma::dot(bfield,pyro_pos[mu])/sqrt(3);
 		cout << "bfield.e_mu "<<mu<<" "<<ops[field_proj_label[mu]]<<"\n";
@@ -83,8 +88,8 @@ int main(int argc, char* argv[]) try {
     }
   }
 
-  ops["Jy"] = 1.0; // Sets bond strength of the Ising coupling
-  ops["Jpm_neg"] = -0.2; // Sets bond strength of the XXZ hopping (note sign)
+  ops["Jy"] = 1.; // Sets bond strength of the Ising coupling
+  ops["Jpm_neg"] = Jpm; // Sets bond strength of the XXZ hopping (note sign)
                            
   ops["h0"] = arma::dot(bfield, arma::vec3({ 1, 1, 1})) / sqrt(3);
   ops["h1"] = arma::dot(bfield, arma::vec3({ 1,-1,-1})) / sqrt(3);
