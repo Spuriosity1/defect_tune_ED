@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) try {
 	arma::vec3 bfield = {atof(argv[3]), atof(argv[4]), atof(argv[5])};
 	int lanczos_dim = atoi(argv[6]); 
 	int num_kept_states = 4;
-	if (argc >= 7) num_kept_states = atoi(argv[7]);
+	if (argc >= 8) num_kept_states = atoi(argv[7]);
 
     out["Jpm"] = Jpm;
     out["B"] = bfield;
@@ -117,19 +117,20 @@ int main(int argc, char* argv[]) try {
 
   set_verbosity(2);             // set verbosity for monitoring progress
 
-  Log("Diagonalizing H");
+  std::cout << ("Diagonalizing H\n");
+  std::cout << "ready to go" <<std::endl;
 
   std::vector<arma::vec> E;
   for (int i=0; i<3; i++){
-    Log("Diagonalising H, block {}", i);
+      std::cout << ("Diagonalising H, block ")<<i<<"\n";
 
-    Spinhalf block(24,group, irreps[i]);
+    Spinhalf block(24, 0, group, irreps[i]);
 
 	std::vector<std::string> statev = {"Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn","Up","Dn"};
 	auto init_state = product(block, statev);
 
 	eigs_lanczos_result_t lanczos_res = eigs_lanczos(ops, block, 
-			init_state, 
+			//init_state, 
 			lanczos_dim,
 			/* precision */ 1e-14,
 			/* max iter */ 10000,

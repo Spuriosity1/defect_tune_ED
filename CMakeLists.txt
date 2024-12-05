@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.19)
 project(
   qsi_defect_cluster
 )
+set(CMAKE_CXX_FLAGS "-Wall -Wpedantic -g")
+
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(xdiag REQUIRED)
 
