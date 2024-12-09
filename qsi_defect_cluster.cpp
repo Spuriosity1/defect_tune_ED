@@ -162,6 +162,6 @@ int main(int argc, char* argv[]) try {
 	std::ofstream file(out_folder + "/out_pyro16_"+label.str()+".json");
   file << out;
 
-} catch (Error e) {
+} catch (Error& e) {
   error_trace(e);
 }
